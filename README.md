@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.MarvinRey7879/patternfetch -->
+
 # patternfetch
 
 **One call turns a crypto ticker + timeframe into a token-compact market-state brief** — compact
