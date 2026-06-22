@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.MarvinRey7879/patternfetch",
-  "description": "Crypto ticker + timeframe → token-compact market-state brief: compact candles, patterns, support/resistance, regime, interpreted indicators. Impersonal data, not advice.",
+  "description": "Crypto ticker+timeframe → compact market-state brief (patterns, S/R, regime). Not advice.",
   "version": "0.1.0",
   "repository": {
     "url": "https://github.com/MarvinRey7879/patternfetch-client",
