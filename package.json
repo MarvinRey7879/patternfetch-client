@@ -1,0 +1,22 @@
+{
+  "name": "patternfetch",
+  "version": "0.1.0",
+  "description": "Tiny zero-dependency client for patternfetch — agent-first API + MCP that turns a crypto ticker + timeframe into a token-compact market-state brief (compact candles, patterns, support/resistance, regime, indicators). Impersonal data, not investment advice.",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": { "types": "./index.d.ts", "import": "./index.js" }
+  },
+  "files": ["index.js", "index.d.ts", "README.md", "LICENSE"],
+  "scripts": { "test": "node test.js" },
+  "keywords": [
+    "patternfetch", "crypto", "trading", "market-data", "candles", "ohlcv", "technical-analysis",
+    "chart-patterns", "support-resistance", "ai-agent", "llm", "mcp", "x402", "token-efficient", "binance"
+  ],
+  "homepage": "https://patternfetch.com",
+  "repository": { "type": "git", "url": "git+https://github.com/MarvinRey7879/patternfetch-client.git" },
+  "license": "MIT",
+  "author": "patternfetch",
+  "engines": { "node": ">=18" }
+}
