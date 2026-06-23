@@ -57,20 +57,33 @@ curl -X POST https://patternfetch.com/v1/brief \
 
 ## MCP
 
-patternfetch is also an MCP server. Tools: `patternfetch_brief`, `patternfetch_delta`,
-`patternfetch_analogs`, `patternfetch_capabilities`.
+patternfetch is a **remote MCP server** (Streamable HTTP) at `https://patternfetch.com/mcp`.
+Tools: `patternfetch_brief`, `patternfetch_delta`, `patternfetch_analogs`, `patternfetch_capabilities`.
+Discovery (`initialize`, `tools/list`) is free — no key. Only `tools/call` needs auth.
+
+**One-click OAuth (nothing to paste)** — in Claude Code, Claude Desktop, Cursor or Smithery, add the
+URL and authorize once; a free-tier key is minted for you:
+
+```bash
+claude mcp add --transport http patternfetch https://patternfetch.com/mcp
+```
+
+In **claude.ai**: Customize → Connectors → Add custom connector → `https://patternfetch.com/mcp` → Authorize.
+
+**Or with a Bearer key** — add to your MCP config:
 
 ```json
 {
   "mcpServers": {
     "patternfetch": {
-      "command": "npx",
-      "args": ["-y", "patternfetch-mcp"],
-      "env": { "PATTERNFETCH_API_KEY": "pf_..." }
+      "url": "https://patternfetch.com/mcp",
+      "headers": { "Authorization": "Bearer pf_..." }
     }
   }
 }
 ```
+
+Get a free key (small starter credit) at `https://patternfetch.com/v1/keys`.
 
 ## Legal
 
