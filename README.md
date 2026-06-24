@@ -85,6 +85,27 @@ In **claude.ai**: Customize → Connectors → Add custom connector → `https:/
 
 Get a free key (small starter credit) at `https://patternfetch.com/v1/keys`.
 
+### Local stdio bridge
+
+Prefer a local stdio server (Claude Desktop, sandboxes, no inbound HTTP)? This package
+ships `patternfetch-mcp`, a zero-dependency stdio↔HTTP bridge that exposes the same tools
+and forwards calls to `patternfetch.com`:
+
+```json
+{
+  "mcpServers": {
+    "patternfetch": {
+      "command": "npx",
+      "args": ["-y", "patternfetch-mcp"],
+      "env": { "PATTERNFETCH_API_KEY": "pf_..." }
+    }
+  }
+}
+```
+
+`tools/list` works with no key; tool calls use `PATTERNFETCH_API_KEY` (or x402). Override the
+endpoint with `PATTERNFETCH_MCP_URL`.
+
 ## Legal
 
 patternfetch provides **impersonal market data and algorithmic signals for informational purposes
