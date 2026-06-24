@@ -93,3 +93,11 @@ export class Patternfetch {
 }
 
 export default Patternfetch;
+
+// When run as a script (e.g. `node index.js`, or Glama's `tsx index.js`), boot the local
+// stdio MCP bridge. Importing this module as a library does NOT trigger this.
+import { argv } from 'node:process';
+import { pathToFileURL } from 'node:url';
+if (argv[1] && import.meta.url === pathToFileURL(argv[1]).href) {
+  import('./mcp.js');
+}
