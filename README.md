@@ -11,7 +11,10 @@ Agent-first **API + MCP**. Crypto spot, minute-to-daily. Pay per call via **x402
 no account) or **Stripe**. **Impersonal market data — not investment advice.**
 
 [![npm](https://img.shields.io/npm/v/patternfetch)](https://www.npmjs.com/package/patternfetch)
+[![patternfetch MCP server](https://glama.ai/mcp/servers/MarvinRey7879/patternfetch-client/badges/score.svg)](https://glama.ai/mcp/servers/MarvinRey7879/patternfetch-client)
 [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+> **Why it's smaller:** for BTC/USDT 4h (120 candles), a raw OHLCV dump is ~3,260 tokens of just numbers the model still has to analyze; patternfetch's interpreted analysis is ~1,323 tokens, already decided. [Reproduce it](https://gist.github.com/MarvinRey7879/cf149d4b57db78fb9cba104c8805d556) (no account needed).
 
 ## Install
 
