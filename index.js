@@ -1,5 +1,6 @@
 // patternfetch — tiny zero-dependency client for the agent-first market-state brief API.
-// ticker + timeframe in -> token-compact brief (candles, patterns, S/R, regime, indicators) out.
+// ticker + timeframe in -> token-compact brief (candles, patterns with backtested base rate +
+// lift vs baseline, S/R, regime, indicators) out. US stocks, ETFs and crypto spot.
 // Impersonal market data, NOT investment advice. Docs: https://patternfetch.com
 
 const DEFAULT_BASE = 'https://patternfetch.com';
@@ -66,8 +67,36 @@ export class Patternfetch {
   }
 
   /** Token-compact market-state brief: candles + patterns + S/R + regime + indicators + summary. */
-  brief({ ticker, timeframe, limit, fields } = {}) {
-    return this._post('/v1/brief', { ticker, timeframe, ...(limit ? { limit } : {}), ...(fields ? { fields } : {}) });
+  brief({ ticker, timeframe, limit, fields, market } = {}) {
+    return this._post('/v1/brief', {
+      ticker,
+      timeframe,
+      ...(limit ? { limit } : {}),
+      ...(fields ? { fields } : {}),
+      ...(market ? { market } : {}),
+    });
+  }
+
+  /** Multi-timeframe view: one brief per timeframe + a cross-timeframe alignment read. */
+  multi({ ticker, timeframes, limit, market } = {}) {
+    return this._post('/v1/multi', {
+      ticker,
+      ...(timeframes ? { timeframes } : {}),
+      ...(limit ? { limit } : {}),
+      ...(market ? { market } : {}),
+    });
+  }
+
+  /** Screener: find tickers by regime/pattern across stocks, ETFs and crypto, ranked by base rate. */
+  scan({ assetClass, regime, pattern, tf, minBaseRate, limit } = {}) {
+    return this._post('/v1/scan', {
+      ...(assetClass ? { assetClass } : {}),
+      ...(regime ? { regime } : {}),
+      ...(pattern ? { pattern } : {}),
+      ...(tf ? { tf } : {}),
+      ...(minBaseRate != null ? { minBaseRate } : {}),
+      ...(limit ? { limit } : {}),
+    });
   }
 
   /** Only what changed since your last brief for this ticker+timeframe (token-minimal polling). */

@@ -1,7 +1,8 @@
 [
   {
     "name": "patternfetch_brief",
-    "description": "Get a token-compact market-state brief for a crypto ticker + timeframe. Returns compact candles, detected chart/candlestick patterns with geometric confidence, support/resistance levels, trend/regime, and interpreted indicators (RSI/EMA state) plus a one-line summary. WHEN: an agent needs the current technical picture of a market without dumping raw OHLCV into context (saves tokens, avoids numeric hallucination). WHEN NOT: you need order execution, portfolio advice, or non-crypto assets. Example: {\"ticker\":\"BTC/USDT\",\"timeframe\":\"4h\"}. Output is impersonal market data, NOT investment advice.",
+    "title": "Market-State Brief",
+    "description": "Get a token-compact market-state brief for a stock, ETF, or crypto ticker + timeframe. Returns compact candles, detected chart/candlestick patterns with geometric confidence AND a backtested historical base rate (how often that pattern+timeframe+confidence-band actually resolved its way), support/resistance levels, trend/regime, and interpreted indicators (RSI/EMA state) plus a one-line summary. Covers US stocks/ETFs (split & dividend adjusted, delayed/EOD) and crypto spot (realtime). WHEN: an agent needs the current technical picture of a market without dumping raw OHLCV into context (saves tokens, avoids numeric hallucination). WHEN NOT: you need order execution or portfolio advice. Examples: {\"ticker\":\"AAPL\",\"timeframe\":\"1d\"}, {\"ticker\":\"BTC/USDT\",\"timeframe\":\"4h\"}. Output is impersonal market data, NOT investment advice.",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -10,20 +11,82 @@
       ],
       "properties": {
         "ticker": {
-          "type": "string"
+          "type": "string",
+          "description": "Symbol to analyse. US stock or ETF like \"AAPL\" / \"SPY\", or a crypto spot pair like \"BTC/USDT\"."
         },
         "timeframe": {
-          "type": "string"
+          "type": "string",
+          "description": "Bar size. One of 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w. Coverage differs per asset class — see the capabilities tool."
         },
         "limit": {
-          "type": "integer"
+          "type": "integer",
+          "description": "How many recent bars to analyse: integer >= 20, capped at 1000, default 200. Fewer bars = fewer tokens."
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "crypto",
+            "stock"
+          ],
+          "description": "Optional asset-class override. Omit and it is inferred from the ticker: a \"BASE/QUOTE\" pair is crypto, a plain symbol is a US stock/ETF."
         }
       }
+    },
+    "annotations": {
+      "title": "Market-State Brief",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "patternfetch_multi",
+    "title": "Multi-Timeframe Brief",
+    "description": "Get a multi-timeframe market-state view for one stock, ETF, or crypto ticker in a single call: a token-compact brief for each requested timeframe (default 1h, 4h, 1d) PLUS a cross-timeframe alignment read — whether the trends across timeframes agree or diverge, with the split spelled out (e.g. \"1h up / 4h up / 1d down\"). WHEN: an agent wants to know if a setup is confirmed across horizons or conflicting between them, without making 3 separate brief calls. WHEN NOT: you only care about one timeframe (use brief). The alignment/divergence is impersonal DESCRIPTIVE data, not a signal to act on. Example: {\"ticker\":\"BTC/USDT\",\"timeframes\":[\"1h\",\"4h\",\"1d\"]}. Not investment advice.",
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "ticker"
+      ],
+      "properties": {
+        "ticker": {
+          "type": "string",
+          "description": "Symbol to analyse. US stock or ETF like \"AAPL\" / \"SPY\", or a crypto spot pair like \"BTC/USDT\"."
+        },
+        "timeframes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Bar sizes to compare, at most 4, e.g. [\"1h\",\"4h\",\"1d\"]. Defaults to [\"1h\",\"4h\",\"1d\"] when omitted."
+        },
+        "limit": {
+          "type": "integer",
+          "description": "How many recent bars to analyse: integer >= 20, capped at 1000, default 200. Fewer bars = fewer tokens."
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "crypto",
+            "stock"
+          ],
+          "description": "Optional asset-class override. Omit and it is inferred from the ticker: a \"BASE/QUOTE\" pair is crypto, a plain symbol is a US stock/ETF."
+        }
+      }
+    },
+    "annotations": {
+      "title": "Multi-Timeframe Brief",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
     "name": "patternfetch_delta",
-    "description": "Get only what CHANGED since your last brief for a ticker+timeframe (trend flips, new patterns, RSI-state changes). WHEN: an agent polls the same market repeatedly and wants minimal tokens. Returns changed=false when nothing material changed. Impersonal data, not advice.",
+    "title": "What Changed Since Last Brief",
+    "description": "Get only what CHANGED since your last brief for a ticker+timeframe (trend flips, new patterns, RSI-state changes). WHEN: an agent polls the same market repeatedly and wants minimal tokens — call brief once, then delta on each later poll. WHEN NOT: first look at a market (use brief). Returns changed=false when nothing material changed. Example: {\"ticker\":\"BTC/USDT\",\"timeframe\":\"4h\"}. Impersonal data, not advice.",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -32,20 +95,39 @@
       ],
       "properties": {
         "ticker": {
-          "type": "string"
+          "type": "string",
+          "description": "Symbol to analyse. US stock or ETF like \"AAPL\" / \"SPY\", or a crypto spot pair like \"BTC/USDT\"."
         },
         "timeframe": {
-          "type": "string"
+          "type": "string",
+          "description": "Bar size. One of 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w. Coverage differs per asset class — see the capabilities tool."
         },
         "limit": {
-          "type": "integer"
+          "type": "integer",
+          "description": "How many recent bars to analyse: integer >= 20, capped at 1000, default 200. Fewer bars = fewer tokens."
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "crypto",
+            "stock"
+          ],
+          "description": "Optional asset-class override. Omit and it is inferred from the ticker: a \"BASE/QUOTE\" pair is crypto, a plain symbol is a US stock/ETF."
         }
       }
+    },
+    "annotations": {
+      "title": "What Changed Since Last Brief",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
     }
   },
   {
     "name": "patternfetch_analogs",
-    "description": "Find historical windows whose shape resembles the current price action and return the FULL distribution of what followed (win-rate, median, min, max, n) over a fixed forward horizon. WHEN: an agent wants historical context for a setup. NOT a prediction, NOT a backtest of a strategy; past distribution does not guarantee future results. Impersonal data, not advice.",
+    "title": "Historical Analogs Distribution",
+    "description": "Find earlier windows IN THE SAME SERIES whose shape resembles the current price action and return the FULL distribution of what followed (win-rate, median, min, max, n) over a fixed forward horizon. Parameters: window = how many recent bars form the shape being matched (default 32); horizon = how many bars forward each match is measured over (default 20). WHEN: an agent wants the historical spread of outcomes after a similar-looking setup, including how wide and how uncertain that spread is. WHEN NOT: you want the current technical picture (use brief), you want to find candidates across the market (use scan), or you need one expected value — this deliberately returns a distribution, not a point estimate. NOT a prediction, NOT a backtest of a strategy; past distribution does not guarantee future results. Example: {\"ticker\":\"ETH/USDT\",\"timeframe\":\"1d\"}. Impersonal data, not advice.",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -54,26 +136,114 @@
       ],
       "properties": {
         "ticker": {
-          "type": "string"
+          "type": "string",
+          "description": "Symbol to analyse. US stock or ETF like \"AAPL\" / \"SPY\", or a crypto spot pair like \"BTC/USDT\"."
         },
         "timeframe": {
-          "type": "string"
+          "type": "string",
+          "description": "Bar size. One of 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w. Coverage differs per asset class — see the capabilities tool."
         },
         "window": {
-          "type": "integer"
+          "type": "integer",
+          "description": "Number of recent bars forming the shape matched against history. Default 32."
         },
         "horizon": {
-          "type": "integer"
+          "type": "integer",
+          "description": "Number of bars forward over which the outcome after each match is measured. Default 20."
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "crypto",
+            "stock"
+          ],
+          "description": "Optional asset-class override. Omit and it is inferred from the ticker: a \"BASE/QUOTE\" pair is crypto, a plain symbol is a US stock/ETF."
         }
       }
+    },
+    "annotations": {
+      "title": "Historical Analogs Distribution",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "patternfetch_scan",
+    "title": "Pattern & Regime Screener",
+    "description": "Scan US stocks, ETFs, and crypto for tickers currently in a given regime or showing a chart/candlestick pattern, RANKED by the honest backtested base rate + 95% CI — discovery, NOT lookup. This is the screener: instead of asking about one ticker you already know, ask \"which tickers right now are in an uptrend / printing a double_bottom, and which of those has the strongest historical base rate?\" and get a ranked shortlist back. Precomputed daily over a curated universe (liquid US large-caps + core/sector ETFs + major crypto pairs) so it is fast and cheap. Filters (all optional): assetClass (\"stock\"|\"crypto\"|\"all\"), regime (\"up\"|\"down\"|\"range\"), pattern (e.g. \"double_bottom\",\"double_top\",\"head_and_shoulders\",\"bullish_engulfing\",\"bearish_engulfing\",\"hammer\"), minBaseRate (0..1, drop tickers whose top pattern base rate is below this), tf, limit. Each row: {sym, tf, assetClass, regime, pattern, baseRate, ci95, n, scope, confidence, asOf} PLUS the drift-free comparison {baseline, lift, liftCi95, liftReading} — baseline is the direction-matched rate with no pattern present, lift is baseRate minus that baseline, and liftReading says whether the difference is distinguishable from zero at all (\"above-baseline\" | \"below-baseline\" | \"indistinguishable-from-baseline\"). Read lift, not baseRate, when comparing a bullish row against a bearish one: in a rising universe a bullish pattern starts ahead before it carries any information. Ranked by baseRate desc, then confidence desc, then narrower CI, then fresher asOf. WHEN: an agent wants to FIND candidates across the market, not analyze a named one (then call brief on the shortlist). WHEN NOT: you already have a specific ticker (use brief). Example: {\"assetClass\":\"all\",\"regime\":\"up\",\"minBaseRate\":0.55,\"limit\":20}. Impersonal historical data, not investment advice; base rates are gross directional frequencies and do not guarantee future results.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "assetClass": {
+          "type": "string",
+          "enum": [
+            "stock",
+            "crypto",
+            "all"
+          ],
+          "description": "Restrict the scanned universe. Default \"all\"."
+        },
+        "regime": {
+          "type": "string",
+          "enum": [
+            "up",
+            "down",
+            "range"
+          ],
+          "description": "Only return tickers currently in this regime. Omit for any."
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Only return tickers whose top pattern is this one, e.g. \"double_bottom\", \"double_top\", \"head_and_shoulders\", \"bullish_engulfing\", \"bearish_engulfing\", \"hammer\"."
+        },
+        "tf": {
+          "type": "string",
+          "enum": [
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h",
+            "4h",
+            "1d",
+            "1w"
+          ],
+          "description": "Only return signals precomputed on this bar size. Omit to consider every precomputed timeframe."
+        },
+        "minBaseRate": {
+          "type": "number",
+          "description": "Number in [0,1]. Drop tickers whose top pattern base rate is below this threshold."
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum rows to return: integer in [1,500], default 50."
+        }
+      }
+    },
+    "annotations": {
+      "title": "Pattern & Regime Screener",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
     }
   },
   {
     "name": "patternfetch_capabilities",
-    "description": "List supported assets, timeframes, endpoints, and limits for patternfetch.",
+    "title": "Server Capabilities",
+    "description": "Return patternfetch's own capability matrix: which asset classes are covered (US stocks, ETFs, crypto spot), the data source and delay for each, the supported timeframes, the endpoint list, the per-call prices and tier limits, and the product version. Takes no arguments and returns the same static self-description on every call — it contains NO market data (no quotes, candles, patterns or base rates). WHEN: once at the start of a session, to learn which asset classes and timeframes are supported before calling brief/multi/delta/analogs/scan, instead of guessing and getting a validation error. WHEN NOT: you already know the ticker and timeframe are supported (go straight to brief), or you want actual market data (this returns none).",
     "inputSchema": {
       "type": "object",
       "properties": {}
+    },
+    "annotations": {
+      "title": "Server Capabilities",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
     }
   }
 ]

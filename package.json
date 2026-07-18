@@ -1,7 +1,7 @@
 {
   "name": "patternfetch",
   "version": "0.2.0",
-  "description": "Tiny zero-dependency client for patternfetch — agent-first API + MCP that turns a crypto ticker + timeframe into a token-compact market-state brief (compact candles, patterns, support/resistance, regime, indicators). Impersonal data, not investment advice. Ships a local stdio MCP bridge.",
+  "description": "Tiny zero-dependency client for patternfetch — agent-first API + MCP for US stocks, ETFs and crypto spot. Ticker + timeframe in, token-compact market-state brief out: compact candles, patterns with backtested base rate and lift vs baseline, support/resistance, regime, indicators. Impersonal data, not investment advice. Ships a local stdio MCP bridge.",
   "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
@@ -12,8 +12,9 @@
   "files": ["index.js", "index.d.ts", "mcp.js", "mcp-tools.json", "README.md", "LICENSE"],
   "scripts": { "test": "node test.js", "mcp": "node mcp.js" },
   "keywords": [
-    "patternfetch", "crypto", "trading", "market-data", "candles", "ohlcv", "technical-analysis",
-    "chart-patterns", "support-resistance", "ai-agent", "llm", "mcp", "x402", "token-efficient", "binance"
+    "patternfetch", "stocks", "etf", "crypto", "trading", "market-data", "candles", "ohlcv",
+    "technical-analysis", "chart-patterns", "base-rates", "screener", "support-resistance",
+    "ai-agent", "llm", "mcp", "x402", "token-efficient"
   ],
   "homepage": "https://patternfetch.com",
   "repository": { "type": "git", "url": "git+https://github.com/MarvinRey7879/patternfetch-client.git" },
